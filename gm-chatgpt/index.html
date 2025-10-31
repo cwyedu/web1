@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 猜歌小挑戰</title>
+  <style>
+    /* =======================
+       全站 CSS 樣式
+       ======================= */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #FFF8E7; /* 淡色背景 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .player-container {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1.2rem;
+      width: 250px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 1.1rem;
+      margin-left: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      min-height: 2em;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 遊戲標題 -->
+  <h1>🎵 猜歌小挑戰</h1>
+
+  <!-- 音樂播放器區 -->
+  <div class="player-container">
+    <audio id="audioPlayer" controls>
+      <!-- 預設訊息，如果瀏覽器不支援 audio -->
+      您的瀏覽器不支援 audio 標籤。
+    </audio>
+  </div>
+
+  <!-- 輸入框與按鈕區 -->
+  <div>
+    <input type="text" id="answerInput" placeholder="輸入歌名">
+    <button id="submitBtn">送出答案</button>
+    <button id="showAnswerBtn">看答案</button>
+    <button id="nextBtn" class="hidden">再來一首</button>
+  </div>
+
+  <!-- 回饋訊息 -->
+  <div class="feedback" id="feedback"></div>
+
+  <script>
+    /* =======================
+       遊戲 JavaScript
+       ======================= */
+
+    // =======================
+    // 歌曲資料陣列
+    // =======================
+    // 注意：請將 file 屬性替換為實際 MP3 檔案路徑
+    const songs = [
+  { title: 'Golden', artist: 'Harry Styles', file: './songs/golden.mp3' },
+  { title: '好好先生', artist: '未知', file: './songs/好好先生.mp3' },
+  { title: '缺口', artist: '未知', file: './songs/缺口.mp3' },
+  { title: '等你下課', artist: '周杰倫', file: './songs/等你下課.mp3' },
+  { title: '蝸牛', artist: '周杰倫', file: './songs/蝸牛.mp3' }
+];
+
+    // =======================
+    // 遊戲狀態變數
+    // =======================
+    let remainingSongs = []; // 存放尚未播放的歌曲
+    let currentSong = null;  // 當前正在播放的歌曲
+
+    // DOM 元素
+    const audioPlayer = document.getElementById('audioPlayer');
+    const answerInput = document.getElementById('answerInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const showAnswerBtn = document.getElementById('showAnswerBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const feedback = document.getElementById('feedback');
+
+    // =======================
+    // 初始化遊戲
+    // =======================
+    function initGame() {
+      // 複製歌曲陣列，避免修改原始資料
+      remainingSongs = [...songs];
+      feedback.textContent = '';
+      nextBtn.classList.add('hidden');
+      answerInput.value = '';
+      pickNextSong();
+    }
+
+    // =======================
+    // 隨機挑選下一首歌
+    // =======================
+    function pickNextSong() {
+      if (remainingSongs.length === 0) {
+        // 全部歌曲都已猜完
+        feedback.textContent = '🎉 歌曲都猜完了！';
+        audioPlayer.src = '';
+        submitBtn.disabled = true;
+        showAnswerBtn.disabled = true;
+        return;
+      }
+
+      // 從 remainingSongs 隨機挑一首
+      const randomIndex = Math.floor(Math.random() * remainingSongs.length);
+      currentSong = remainingSongs[randomIndex];
+
+      // 設定 audio 播放來源
+      audioPlayer.src = currentSong.file;
+      audioPlayer.play();
+
+      // 清空輸入與回饋
+      answerInput.value = '';
+      feedback.textContent = '';
+
+      // 隱藏「再來一首」按鈕
+      nextBtn.classList.add('hidden');
+
+      // 啟用送出與看答案按鈕
+      submitBtn.disabled = false;
+      showAnswerBtn.disabled = false;
+    }
+
+    // =======================
+    // 檢查使用者答案
+    // =======================
+    function checkAnswer() {
+      const userAnswer = answerInput.value.trim();
+      if (userAnswer === '') return; // 若沒有輸入，不做任何事
+
+      if (userAnswer === currentSong.title) {
+        feedback.textContent = '✅ 猜對了！';
+        showNextOption();
+      } else {
+        feedback.textContent = '❌ 猜錯了，再試一次！';
+      }
+    }
+
+    // =======================
+    // 顯示正確答案
+    // =======================
+    function showAnswer() {
+      feedback.textContent = `答案是：${currentSong.title} - ${currentSong.artist}`;
+      showNextOption();
+    }
+
+    // =======================
+    // 顯示「再來一首」按鈕
+    // 並禁用送出與看答案
+    // =======================
+    function showNextOption() {
+      nextBtn.classList.remove('hidden');
+      submitBtn.disabled = true;
+      showAnswerBtn.disabled = true;
+
+      // 將已播放的歌曲從 remainingSongs 移除
+      remainingSongs = remainingSongs.filter(song => song !== currentSong);
+    }
+
+    // =======================
+    // 事件監聽
+    // =======================
+    submitBtn.addEventListener('click', checkAnswer);
+    showAnswerBtn.addEventListener('click', showAnswer);
+    nextBtn.addEventListener('click', pickNextSong);
+
+    // 讓 Enter 鍵也能送出答案
+    answerInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        checkAnswer();
+      }
+    });
+
+    // =======================
+    // 啟動遊戲
+    // =======================
+    initGame();
+  </script>
+</body>
+</html>
