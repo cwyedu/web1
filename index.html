@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>猜歌大集合</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #00e5ff;
+      text-shadow: 0 0 15px #00e5ff;
+      margin-bottom: 40px;
+    }
+
+    .link-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 280px;
+    }
+
+    .link-btn {
+      background: #111;
+      border: 2px solid #00e5ff;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #00e5ff;
+      text-shadow: 0 0 5px #00e5ff;
+      transition: all 0.3s ease;
+    }
+
+    .link-btn:hover {
+      background: #00e5ff;
+      color: #111;
+      box-shadow: 0 0 20px #00e5ff;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.8rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>猜歌大集合</h1>
+
+  <div class="link-container">
+    <a class="link-btn" href="./gm-chatgpt/index.html">🎧 ChatGPT 版本</a>
+    <a class="link-btn" href="./gm-claude/index.html">🤖 Claude 版本</a>
+    <a class="link-btn" href="./gm-gemini/index.html">🌟 Gemini 版本</a>
+  </div>
+
+  <footer>© 2025 猜歌系統入口</footer>
+
+</body>
+</html>
